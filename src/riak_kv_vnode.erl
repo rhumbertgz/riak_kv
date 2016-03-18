@@ -79,6 +79,8 @@
 -export([handoff_data_encoding_method/0]).
 -export([set_vnode_forwarding/2]).
 
+-export_type([bprops/0]).
+
 -include_lib("riak_kv_vnode.hrl").
 -include_lib("riak_kv_index.hrl").
 -include_lib("riak_kv_map_phase.hrl").
@@ -159,6 +161,7 @@
 -type state() :: #state{}.
 -type vnodeid() :: binary().
 -type counter_lease_error() :: {error, counter_lease_max_errors | counter_lease_timeout}.
+-type bprops() :: maybe_improper_list().
 
 -define(MD_CACHE_BASE, "riak_kv_vnode_md_cache").
 -define(DEFAULT_HASHTREE_TOKENS, 90).
@@ -192,7 +195,7 @@
                   robj :: term(),
                   index_specs=[] :: [{index_op(), binary(), index_value()}],
                   reqid :: non_neg_integer(),
-                  bprops :: maybe_improper_list(),
+                  bprops :: bprops(),
                   starttime :: non_neg_integer(),
                   prunetime :: undefined| non_neg_integer(),
                   is_index=false :: boolean(), %% set if the b/end supports indexes
