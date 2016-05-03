@@ -136,7 +136,7 @@ make_bk(1, Bucket, Key) ->
 %% @doc Start the bitcask backend
 -spec start(integer(), config()) -> {ok, state()} | {error, term()}.
 start(Partition, Config0) ->
-    random:seed(erlang:now()),
+    random:seed(otp_utils:get_current_time()),
     {Config, KeyVsn} =
         case app_helper:get_prop_or_env(small_keys, Config0, bitcask) of
             false ->

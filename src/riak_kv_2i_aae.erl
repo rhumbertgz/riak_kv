@@ -187,7 +187,7 @@ wait_for_aae_pid({ReqId, {error, Err}}, State=#state{aae_pid_req_id=ReqId,
 wait_for_aae_pid({ReqId, {ok, TreePid}},
                  State=#state{aae_pid_req_id=ReqId, speed=Speed,
                               aae_pid_timer=Timer,
-                              remaining=[Partition|_]}) 
+                              remaining=[Partition|_]})
   when is_pid(TreePid) ->
     _ = gen_fsm:cancel_timer(Timer),
     WorkerFun =
@@ -363,7 +363,7 @@ create_index_data_db(Partition, DutyCycle, DBDir, DBRef) ->
     lager:info("Grabbing all index data for partition ~p", [Partition]),
     Ref = make_ref(),
     Sender = {raw, Ref, Client},
-    StartTime = now(),
+    StartTime = otp_utils:get_current_time(),
     riak_core_vnode_master:command({Partition, node()},
                                    {fold_indexes, Fun, 0},
                                    Sender,
@@ -395,7 +395,7 @@ leveldb_opts() ->
 duty_cycle_pause(WaitFactor, StartTime) ->
     case WaitFactor > 0 of
         true ->
-            Now = now(),
+            Now = otp_utils:get_current_time(),
             ElapsedMicros = timer:now_diff(Now, StartTime),
             WaitMicros = ElapsedMicros * WaitFactor,
             WaitMillis = trunc(WaitMicros / 1000 + 0.5),
@@ -416,7 +416,7 @@ wait_for_index_scan(Ref, BatchRef, StartTime, WaitFactor) ->
             duty_cycle_pause(WaitFactor, StartTime),
             Pid ! {BatchRef, continue},
             send_event({index_scan_update, Count}),
-            wait_for_index_scan(Ref, BatchRef, now(), WaitFactor);
+            wait_for_index_scan(Ref, BatchRef, otp_utils:get_current_time(), WaitFactor);
         {Ref, Result} ->
             Result
     after
@@ -468,7 +468,7 @@ build_tmp_tree(Index, DBRef, DutyCycle) ->
                         0 ->
                             send_event({hashtree_population_update, Count2}),
                             duty_cycle_pause(WaitFactor, StartTime),
-                            now();
+                            otp_utils:get_current_time();
                         _ ->
                             StartTime
                     end,
@@ -476,7 +476,7 @@ build_tmp_tree(Index, DBRef, DutyCycle) ->
             end,
             send_event({hashtree_population_update, 0}),
             {Count, Tree2, _} = eleveldb:fold(DBRef, FoldFun,
-                                              {0, Tree, erlang:now()}, []),
+                                              {0, Tree, otp_utils:get_current_time()}, []),
             lager:info("Done building temporary tree for 2i data "
                        "with ~p entries",
                        [Count]),
