@@ -486,7 +486,7 @@ deleted_test() ->
 
 make_vtag_test() ->
     crypto:start(),
-    ?assertNot(make_vtag(now()) =:=
-               make_vtag(now())).
+    ?assertNot(make_vtag(otp_utils:get_current_time()) =:=
+               make_vtag(otp_utils:get_current_time())).
 
 -endif.

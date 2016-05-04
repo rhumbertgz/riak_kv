@@ -242,7 +242,7 @@ key_exchange(timeout, State=#state{local=LocalVN,
             StartTime = otp_utils:get_current_time(),
             ok = sort_disk_log(LogFile1, LogFile2),
             lager:debug("~s:key_exchange: sorting time = ~p seconds\n",
-                        [?MODULE, timer:now_diff(now(), StartTime) / 1000000]),
+                        [?MODULE, timer:now_diff(otp_utils:get_current_time(), StartTime) / 1000000]),
             {ok, ReadLog} = open_disk_log(Now, LogFile2, read_only),
             FoldRes =
                 fold_disk_log(fun(Diff, Acc) ->
@@ -361,9 +361,9 @@ open_disk_log(Name, Path, RWorRO, OtherOpts) ->
     disk_log:open([{name, Name}, {file, Path}, {mode, RWorRO}|OtherOpts]).
 
 sort_disk_log(InputFile, OutputFile) ->
-    {ok, ReadLog} = open_disk_log(now(), InputFile, read_only),
+    {ok, ReadLog} = open_disk_log(otp_utils:get_current_time(), InputFile, read_only),
     _ = file:delete(OutputFile),
-    {ok, WriteLog} = open_disk_log(now(), OutputFile, read_write),
+    {ok, WriteLog} = open_disk_log(otp_utils:get_current_time(), OutputFile, read_write),
     Input = sort_disk_log_input(ReadLog),
     Output = sort_disk_log_output(WriteLog),
     try
