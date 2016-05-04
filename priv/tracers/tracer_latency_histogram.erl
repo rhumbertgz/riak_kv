@@ -22,12 +22,12 @@
 %% Watch for 10 seconds.
 %%
 %% > latency_histogram_tracer:start(bitcask, put, 3, 10).
-%% 
+%%
 %% Tracer pid: <0.2108.18>, use latency_histogram_tracer:stop() to stop
 %% Otherwise, tracing stops in 10 seconds
 %% Current date & time: {2013,9,19} {18,14,13}
 %% {started,<0.2108.18>}
-%% Histogram stats:     
+%% Histogram stats:
 %% [{min,0},
 %%  {max,48},
 %%  {arithmetic_mean,2.765411819271055},
@@ -83,7 +83,7 @@ start(Mod, Func, Arity, RunSeconds) ->
     dbg:tracer(process, {fun trace/2, new_stats(0)}),
     dbg:p(all, [call, timestamp, arity]),
     dbg:tpl(Mod, Func, Arity, [{'_', [], [{return_trace}]}]),
-    
+
     {ok, TPid} = dbg:get_tracer(),
     io:format("Tracer pid: ~p, use ~p:stop() to stop\n", [TPid, ?MODULE]),
     io:format("Otherwise, tracing stops in ~p seconds\n", [RunSeconds]),
@@ -105,7 +105,7 @@ trace({trace_ts, Pid, return_from, {_, _, _}, _Res, TS}, {Dict, LatencyMS}) ->
     DKey = Pid,
     Start = case dict:find(DKey, Dict) of
                 {ok, StTime} -> StTime;
-                error        -> now()
+                error        -> otp_utils:get_current_time()
             end,
     Elapsed = timer:now_diff(TS, Start) div 1000,
     folsom_metrics_histogram:update(foo, Elapsed),
@@ -122,4 +122,3 @@ new_stats(LatencyMS) ->
 
 print_stats(_DictStats) ->
     ok.
-

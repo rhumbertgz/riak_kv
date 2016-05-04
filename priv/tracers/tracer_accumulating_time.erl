@@ -26,7 +26,7 @@ start(Pid_list, MFA_list, IntervalMS) ->
     [dbg:p(Pid, [call, timestamp, arity]) || Pid <- Pid_list],
     [catch dbg:tpl(Mod, Func, Arity, [{'_', [], [{return_trace}]}]) ||
         {Mod, Func, Arity} <- MFA_list],
-    
+
     {ok, TPid} = dbg:get_tracer(),
     io:format("Tracer pid: ~p, use ~p:stop() to stop\n", [TPid, ?MODULE]),
     timer:send_interval(IntervalMS, TPid, print_report),
@@ -46,7 +46,7 @@ trace({trace_ts, Pid, return_from, {Mod, Func, Arity}, _Res, TS}, {Dict}) ->
     DKey = {Pid, MFA},
     Start = case dict:find(DKey, Dict) of
                 {ok, StTime} -> StTime;
-                error        -> now()
+                error        -> otp_utils:get_current_time()
             end,
     Elapsed = timer:now_diff(TS, Start),
     SumKey = {sum, MFA},

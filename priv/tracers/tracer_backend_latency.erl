@@ -112,7 +112,7 @@ start(LatencyMS, Modules) ->
                           {get_object,4},
                           {put_object,5},
                           {delete,4}]],
-    
+
     %% Don't need return_trace events for this use case, but here's
     %% how to do it if needed.
     %%dbg:tpl(bitcask, merge_single_entry, 6, [{'_', [], [{return_trace}]}]).
@@ -136,7 +136,7 @@ trace({trace_ts, Pid, call, {riak_kv_put_fsm, init, _}, TS}, {Dict, LMS}) ->
 trace({trace_ts, Pid, call, {riak_kv_put_fsm, finish, _}, TS}, {Dict, LatencyMS}) ->
     Start = case dict:find({put, Pid}, Dict) of
                 {ok, StTime} -> StTime;
-                error        -> now()
+                error        -> otp_utils:get_current_time()
             end,
     case timer:now_diff(TS, Start) div 1000 of
         Elapsed when Elapsed > LatencyMS ->
@@ -150,7 +150,7 @@ trace({trace_ts, Pid, call, {riak_kv_get_fsm, init, _}, TS}, {Dict, LMS}) ->
 trace({trace_ts, Pid, call, {riak_kv_get_fsm, finalize, _}, TS}, {Dict, LatencyMS}) ->
     Start = case dict:find({get, Pid}, Dict) of
                 {ok, StTime} -> StTime;
-                error        -> now()
+                error        -> otp_utils:get_current_time()
             end,
     case timer:now_diff(TS, Start) div 1000 of
         Elapsed when Elapsed > LatencyMS ->
@@ -165,7 +165,7 @@ trace({trace_ts, Pid, return_from, {Mod, Func, _}, _Res, TS}, {Dict, LatencyMS})
     DKey = {Mod, Pid},
     Start = case dict:find(DKey, Dict) of
                 {ok, StTime} -> StTime;
-                error        -> now()
+                error        -> otp_utils:get_current_time()
             end,
     case timer:now_diff(TS, Start) div 1000 of
         Elapsed when Elapsed > LatencyMS ->
@@ -194,4 +194,3 @@ new_stats(LatencyMS) ->
 
 print_stats(_DictStats) ->
     ok.
-

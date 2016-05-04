@@ -180,7 +180,7 @@ key_exchange(timeout, State=#state{local=LocalVN,
     lager:debug("Exchanging hashes for preflist ~p", [IndexN]),
 
     TmpDir = tmp_dir(),
-    {NA, NB, NC} = Now = WriteLog = now(),
+    {NA, NB, NC} = Now = WriteLog = otp_utils:get_current_time(),
     LogFile1 = lists:flatten(io_lib:format("~s/in.~p.~p.~p",
                                            [TmpDir, NA, NB, NC])),
     LogFile2 = lists:flatten(io_lib:format("~s/out.~p.~p.~p",
@@ -239,7 +239,7 @@ key_exchange(timeout, State=#state{local=LocalVN,
             %% by BKey is unlikely to be any worse.  For Riak CS's use
             %% pattern, sorting may have some benefit since block N is
             %% likely to be nearby on disk of block N+1.
-            StartTime = now(),
+            StartTime = otp_utils:get_current_time(),
             ok = sort_disk_log(LogFile1, LogFile2),
             lager:debug("~s:key_exchange: sorting time = ~p seconds\n",
                         [?MODULE, timer:now_diff(now(), StartTime) / 1000000]),

@@ -445,7 +445,7 @@ map2pipe(FunSpec, Arg, Keep, I, QueryT) ->
                             chashfun=follow}];
         true ->
              []
-     end.              
+     end.
 
 %% @doc Examine query and application options to determine if
 %% prereduce is appropriate.
@@ -1127,7 +1127,7 @@ compat_fun(_, _, _) ->
 random_constant_hash()->
     %% using now/0 as a randomizer, so that we don't overload just one
     %% riak node with reduce work
-    Random = chash:key_of(now()),
+    Random = chash:key_of(otp_utils:get_current_time()),
 
     %% the trick here: generate a random hash, then find the first
     %% vnode alive in its preflist, then re-generate a hash that puts
